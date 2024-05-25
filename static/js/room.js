@@ -74,3 +74,38 @@ let hideDisplayFrame = () => {
 }
 
 displayFrame.addEventListener('click', hideDisplayFrame)
+
+let isRecording = false;
+
+async function toggleAudioRecording() {
+  const recordButton = document.getElementById('record');
+  const roomId = new URLSearchParams(window.location.search).get('room');
+  console.log('Room ID:', roomId); // Log the room ID
+
+  if (!roomId) {
+      console.error('Room ID not found');
+      return;
+  }
+
+  if (isRecording) {
+      await fetch('/stop_recording', { method: 'POST' });
+      recordButton.classList.remove('active');
+      isRecording = false;
+  } else {
+      const response = await fetch('/start_recording', {
+          method: 'POST',
+          headers: {
+              'Content-Type': 'application/json'
+          },
+          body: JSON.stringify({ room_id: roomId })
+      });
+      
+      if (response.ok) {
+          recordButton.classList.add('active');
+          isRecording = true;
+      } else {
+          console.error('Failed to start recording');
+      }
+  }
+}
+

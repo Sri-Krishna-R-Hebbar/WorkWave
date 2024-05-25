@@ -22,7 +22,9 @@ if(!roomId){
 
 let displayName = sessionStorage.getItem('display_name')
 if(!displayName){
-    window.location = 'lobby.html'
+    // window.location = 'templates/lobby.html'
+    // await fetch('/lobby' , {method : 'GET'})
+    window.location = '/lobby';
 }
 
 let localTracks = []
