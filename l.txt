@@ -1,3 +1,4 @@
+this is my room.html :
 <!DOCTYPE html>
 <html>
 <head>
@@ -19,7 +20,7 @@
             <a href="{{url_for ('lobbyGet')}}"/>
                 <h3 id="logo">
                     <img src="{{ url_for('static', filename='images/logo.png') }}" alt="Site Logo">
-                    <span>WorkWave</span>
+                    <span>Mumble</span>
                 </h3>
             </a>
        </div>
@@ -105,4 +106,209 @@
 <script type="text/javascript" src="{{ url_for('static', filename='js/room_rtm.js') }}"></script>
 <script type="text/javascript" src="{{ url_for('static', filename='js/room_rtc.js') }}"></script>
 </html>
+this is my notes.html :
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <title>Sticky Notes App</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.1/dist/css/bootstrap.min.css">
+    <style>
+        body {
+            background-color: beige; /* Change background color to beige */
+            font-family: Arial, sans-serif; 
+        }
 
+        .header {
+            background-color: beige; /* Set background color of header to beige */
+            padding: 20px;
+            text-align: center;
+        }
+
+        .note-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: flex-start;
+            max-width: 1600px;
+            margin: 0 auto;
+            padding: 20px;
+            box-sizing: border-box;
+        }
+
+        .note {
+            width: calc(20% - 20px);
+            height: 300px;
+            border: 1px solid #ccc;
+            margin: 0 10px 30px 10px;
+            padding: 10px;
+            overflow: auto;
+            box-sizing: border-box;
+            background-color: beige; /* Set background color to beige */
+            position: relative; /* Position relative for absolute positioning of delete button */
+        }
+
+        .yellow {
+            background-color: #feff9c;
+        }
+
+        .lightblue {
+            background-color: lightblue;
+        }
+
+        .pink {
+            background-color: pink;
+        }
+
+        .search-bar {
+            margin-top: 30px;
+            text-align: center;
+        }
+
+        .search-title {
+            margin-bottom: 10px; /* Add margin bottom to separate from the search box */
+        }
+
+        .search-input {
+            width: 200px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75); /* Add box shadow */
+        }
+
+        .search-button {
+            padding: 10px 20px;
+            background-color: #28a745; /* Set background color to green */
+            color: #fff;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+
+        /* Style for delete button */
+        .delete-button {
+            position: absolute;
+            bottom: 10px; /* Adjust this value to move the button up or down */
+            right: 10px;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="header">
+        <h1>Sticky Notes App</h1>
+        <h3>Create a new note:</h3>
+        <form action="/add_note" method="post">
+            <!-- Input fields for adding a new note -->
+            <input type="text" name="note_text" class="search-input" placeholder="Take a note..." style="color: grey; width: 400px; box-shadow: 0px 0px 5px 0px rgba(0,0,0,0.75);"> <!-- Apply box shadow to input -->
+            <select name="note_color" class="search-input">
+                <option value="yellow">Yellow</option>
+                <option value="lightblue">Blue</option>
+                <option value="pink">Pink</option>
+            </select>
+            <button type="submit" class="search-button">Add</button> <!-- Add search-button class to make it green -->
+        </form>
+    </div>
+
+    <div class="search-bar">
+        <h3 class="search-title">Search</h3> <!-- Add title called "Search" -->
+		<form action="/search" method="get">
+			<input type="text" name="query" class="search-input" placeholder="Search..." value="{{ query }}">
+			<button type="submit" class="search-button">Search</button>
+		</form>
+	</div>
+	<div class="note-container">
+		{% if notes %}
+			{% for note in notes %}
+				<div class="note {{ note.color }} beige"> <!-- Add beige class here -->
+					<p>{{ note.text }}</p>
+					<form action="/delete_note/{{ loop.index0 }}" method="post">
+						<button type="submit" class="delete-button">Delete</button> <!-- Add delete button with delete-button class -->
+					</form>
+				</div>
+			{% endfor %}
+		{% else %}
+			<p>No notes found for "{{ query }}"</p>
+		{% endif %}
+	</div>
+	
+</body>
+</html>
+
+, now whenever i click on the button in the room.html with id "notes" , then it must open up this notes.hmtl , where they could store their own notes . whenver they click on that it must open up in the new tab , not in the same tab . 
+
+now i want to update the app.py which i have currenltly :
+from flask import Flask, render_template, jsonify, request, redirect, url_for
+import soundcard as sc
+import soundfile as sf
+from threading import Thread, Event
+import datetime
+import os
+import logging
+
+app = Flask(__name__)
+app.logger.setLevel(logging.DEBUG) 
+
+SAMPLE_RATE = 48000  
+
+recording_event = Event()
+recording_thread = None
+output_file_name = None
+
+def record_audio(output_file_name):
+    with sc.get_microphone(id=str(sc.default_speaker().name), include_loopback=True).recorder(samplerate=SAMPLE_RATE) as mic:
+        with sf.SoundFile(output_file_name, mode='w', samplerate=SAMPLE_RATE, channels=1) as file:
+            while recording_event.is_set():
+                data = mic.record(numframes=SAMPLE_RATE)
+                file.write(data[:, 0])
+
+@app.route('/')
+def index():
+    return render_template('room.html')
+
+@app.route('/lobby')
+def lobbyGet():
+    return render_template('lobby.html')
+
+@app.route('/room')
+def room():
+    room_id = request.args.get('room')
+    if not room_id:
+        return redirect('/lobby')
+    return render_template('room.html')
+
+@app.route('/start_recording', methods=['POST'])
+def start_recording():
+    global recording_thread, output_file_name
+    data = request.get_json()
+    app.logger.debug(f'Received data: {data}') 
+    room_id = data.get('room_id')
+
+    if not room_id:
+        return jsonify(status='error', message='Room ID is required'), 400
+
+    if not recording_event.is_set():
+        now = datetime.datetime.now()
+        dt_string = now.strftime("%d%m%Y_%H%M%S")
+        
+        folder_path = os.path.join('Audio', room_id)
+        os.makedirs(folder_path, exist_ok=True)
+        
+        output_file_name = os.path.join(folder_path, f"{room_id}_{dt_string}.wav")
+        
+        recording_event.set()
+        recording_thread = Thread(target=record_audio, args=(output_file_name,))
+        recording_thread.start()
+        
+    return jsonify(status='started')
+
+@app.route('/stop_recording', methods=['POST'])
+def stop_recording():
+    if recording_event.is_set():
+        recording_event.clear()
+        recording_thread.join()
+    return jsonify(status='stopped')
+
+if __name__ == '__main__':
+    app.run(debug=True)
+
+add the routes you need . The x.py , there 

@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login or Signup</title>
+    <link rel="stylesheet" href="{{url_for('static', filename='styles/login.css')}}">
+</head>
+<body>
+    <div class="container">
+        <button class="toggle-button" onclick="toggleForm()">Signup</button>
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                <div class="message {{ messages[0][0] }}">
+                    {{ messages[0][1] }}
+                </div>
+                <script>
+                    setTimeout(() => {
+                        document.querySelector('.message').style.display = 'none';
+                    }, 5000);
+                </script>
+            {% endif %}
+        {% endwith %}
+        <div id="login-form">
+            <h2>Login</h2>
+            <form action="/login" method="post">
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="password" placeholder="Password" required>
+                <button type="submit">Login</button>
+            </form>
+        </div>
+        <div id="signup-form" style="display: none;">
+            <h2>Signup</h2>
+            <form action="/signup" method="post">
+                <input type="text" name="first_name" placeholder="First Name" required>
+                <input type="text" name="last_name" placeholder="Last Name" required>
+                <input type="email" name="email" placeholder="Email" required>
+                <input type="password" name="password" placeholder="Password" required>
+                <button type="submit">Signup</button>
+            </form>
+        </div>
+    </div>
+
+    <script src="{{url_for('static', filename='js/login.js')}}"></script>
+</body>
+</html>

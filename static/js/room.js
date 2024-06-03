@@ -80,7 +80,7 @@ let isRecording = false;
 async function toggleAudioRecording() {
   const recordButton = document.getElementById('record');
   const roomId = new URLSearchParams(window.location.search).get('room');
-  console.log('Room ID:', roomId); // Log the room ID
+  console.log('Room ID:', roomId);
 
   if (!roomId) {
       console.error('Room ID not found');
