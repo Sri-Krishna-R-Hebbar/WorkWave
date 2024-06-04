@@ -1,0 +1,45 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <title>WorkWave - Notes</title>
+    <link rel="stylesheet" type="text/css" href="{{ url_for('static', filename='styles/notes.css') }}">
+</head>
+<body>
+    <header>
+        <h1>WorkWave</h1>
+    </header>
+    <main>
+        <section id="create-note-section">
+            <h2>Create a Note</h2>
+            <form id="note-form" action="/create_note" method="post">
+                <label for="room_name">Room Name:</label>
+                <input type="text" id="room_name" name="room_name" required>
+                
+                <label for="content">Note Content:</label>
+                <textarea id="content" name="content" required></textarea>
+                
+                <label for="color">Note Color:</label>
+                <select id="color" name="color" required>
+                    <option value="blue">Blue</option>
+                    <option value="pink">Pink</option>
+                    <option value="black">Black</option>
+                </select>
+                
+                <button type="submit">Create Note</button>
+            </form>
+        </section>
+        <section id="notes-display-section">
+            <h2>Notes for Room:</h2>
+            <div id="notes-container">
+                {% for note in notes %}
+                <div class="note" style="background-color: {{ note[1] }};">
+                    <p>{{ note[0] }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </section>
+    </main>
+</body>
+<script src="{{ url_for('static', filename='js/notes.js') }}"></script>
+</html>

@@ -1,0 +1,87 @@
+@import url('https://fonts.googleapis.com/css2?family=Oswald:wght@200..700&family=Playfair+Display:wght@400&family=Pacifico&display=swap');
+
+body {
+    font-family: 'Playfair Display', serif;
+    background-color: #FAF9F6;
+    margin: 0;
+    padding: 0;
+    color: #333;
+}
+
+header {
+    background-color: #293241;
+    color: #fff;
+    padding: 10px;
+    text-align: center;
+    font-family: 'Oswald', sans-serif;
+}
+
+main {
+    padding: 20px;
+}
+
+#create-note-section, #notes-display-section {
+    margin-bottom: 20px;
+    background-color: #E0FBFC;
+    border-radius: 8px;
+    padding: 20px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+}
+
+h2 {
+    color: #293241;
+    font-family: 'Oswald', sans-serif;
+}
+
+form {
+    display: flex;
+    flex-direction: column;
+}
+
+label {
+    margin: 5px 0;
+    font-weight: bold;
+}
+
+input, textarea, select, button {
+    margin: 5px 0 15px 0;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    box-sizing: border-box;
+}
+
+button {
+    background-color: #EE6C4D;
+    color: white;
+    border: none;
+    cursor: pointer;
+    font-family: 'Oswald', sans-serif;
+    transition: background-color 0.3s ease;
+}
+
+button:hover {
+    background-color: #D95D39;
+}
+
+#notes-container {
+    display: flex;
+    flex-wrap: wrap;
+    margin-top: 20px;
+}
+
+.note {
+    padding: 10px;
+    margin: 10px;
+    border-radius: 8px;
+    color: #fff;
+    width: 200px;
+    word-break: break-word;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    font-family: 'Playfair Display', serif;
+}
+
+.note p {
+    margin: 0;
+}

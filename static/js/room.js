@@ -109,3 +109,6 @@ async function toggleAudioRecording() {
   }
 }
 
+document.getElementById('notes').addEventListener('click', function() {
+  window.location.href = '/note';
+});

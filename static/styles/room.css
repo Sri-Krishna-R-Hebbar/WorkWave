@@ -182,9 +182,9 @@ body {
   width: calc(100% - 40.7rem);
   position: fixed;
   left: 15.7rem;
-  top: 74px;  /* Adjusted from calc(100vh - 72px) */
+  top: 74px; 
   overflow-y: auto;
-  height: calc(100vh - 74px); /* Adjusted height to fit within the viewport */
+  height: calc(100vh - 74px); 
 }
 
 #stream__box {
@@ -212,7 +212,7 @@ body {
   justify-content: center;
   align-items: center;
   margin-top: 25px;
-  margin-bottom: 25px; /* Adjusted to avoid overflow */
+  margin-bottom: 25px; 
 }
 
 .video__container {

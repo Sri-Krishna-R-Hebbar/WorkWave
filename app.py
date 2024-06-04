@@ -9,8 +9,11 @@ import logging
 import datetime
 
 app = Flask(__name__)
-app.secret_key = 'fthge gtnggnt'
-app.logger.setLevel(logging.DEBUG) 
+app.secret_key = 'workwave office'
+UPLOAD_FOLDER = 'uploads'
+ALLOWED_EXTENSIONS = {'zip', 'txt', 'pdf', 'png', 'jpg', 'jpeg', 'doc', 'docx'}
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+logging.basicConfig(level=logging.DEBUG)
 
 SAMPLE_RATE = 48000  
 
@@ -58,6 +61,14 @@ def init_db():
                             id INTEGER PRIMARY KEY AUTOINCREMENT,
                             filename TEXT NOT NULL,
                             filepath TEXT NOT NULL)''')
+        cursor.execute('''CREATE TABLE IF NOT EXISTS notes (
+                            id INTEGER PRIMARY KEY AUTOINCREMENT,
+                            user_id INTEGER NOT NULL,
+                            room_name TEXT NOT NULL,
+                            content TEXT NOT NULL,
+                            color TEXT NOT NULL,
+                            timestamp DATETIME DEFAULT CURRENT_TIMESTAMP,
+                            FOREIGN KEY (user_id) REFERENCES users(id))''')
         conn.commit()
 
 init_db()
@@ -283,13 +294,6 @@ def download_file(file_id):
         else:
             return "File not found", 404
 
-# if __name__ == '__main__':
-#     app.run(debug=True)
-
-# @app.route('/')
-# def index():
-#     return render_template('room.html')
-
 @app.route('/lobby')
 def lobbyGet():
     return render_template('lobby.html')
@@ -332,6 +336,48 @@ def stop_recording():
         recording_event.clear()
         recording_thread.join()
     return jsonify(status='stopped')
+
+@app.route('/note', methods=['GET', 'POST'])
+def note():
+    if 'user_id' not in session:
+        return redirect(url_for('home'))
+
+    user_id = session['user_id']
+    room_name = request.args.get('room_name')
+
+    with sqlite3.connect('users.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute("SELECT content, color FROM notes WHERE user_id = ? AND room_name = ?", 
+                       (user_id, room_name))
+        notes = cursor.fetchall()
+
+    return render_template('notes.html', room_name=room_name, notes=notes)
+
+@app.route('/create_note', methods=['POST'])
+def create_note():
+    if 'user_id' not in session:
+        return redirect(url_for('home'))
+
+    user_id = session['user_id']
+    room_name = request.form.get('room_name')
+    content = request.form.get('content')
+    color = request.form.get('color')
+
+    with sqlite3.connect('users.db') as conn:
+        cursor = conn.cursor()
+        cursor.execute("INSERT INTO notes (user_id, room_name, content, color) VALUES (?, ?, ?, ?)", 
+                       (user_id, room_name, content, color))
+        conn.commit()
+    
+    note = {
+        'content': content,
+        'color': color
+    }
+
+    if request.headers.get('X-Requested-With') == 'XMLHttpRequest':
+        return jsonify(success=True, note=note)
+    else:
+        return redirect(url_for('note', room_name=room_name))
 
 if __name__ == '__main__':
     app.run(debug=True)
