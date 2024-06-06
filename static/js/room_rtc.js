@@ -1,4 +1,4 @@
-const APP_ID = "46f5b59ddb254594993e658baf66163b"
+const APP_ID = "Your_Agora_App_ID"
 
 let uid = sessionStorage.getItem('uid')
 if(!uid){
